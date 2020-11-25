@@ -17,6 +17,9 @@ from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.naive_bayes import GaussianNB
 
+from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
+
 df = pd.read_csv('C:/Users/samsung/Desktop/train_dirty.csv')
 df = df.drop('customerID', axis=1) # 단순 customer ID
 df = df.drop('SeniorCitizen', axis=1) # 고객이 고령자인지
@@ -189,4 +192,63 @@ print('voting score', eclf2.score(X_test_scaled,Y_test))
 # ----------------------------------------------------------------------------
 
 # evaluation(confusion matrix, ROC curve)
-from sklearn.metrics import confusion_matrix
+predict_lr = logistic_best.predict(X_test_scaled)
+y_score_lr = logistic_best.fit(X_test_scaled,Y_test).decision_function(X_test_scaled)
+print("Confusion matrix Logistic Regression")
+print(confusion_matrix(Y_test, predict_lr))
+
+predict_knn = knn_best.predict(X_test_scaled)
+# y_score_knn = knn_best.fit(X_test_scaled,Y_test).decision_function(X_test_scaled)
+print("Confusion matrix KNeighborsClassifier")
+print(confusion_matrix(Y_test, predict_knn))
+
+predict_dt = decisionTree_best.predict(X_test_scaled)
+# y_score_dt = decisionTree_best.fit(X_test_scaled,Y_test).decision_function(X_test_scaled)
+print("Confusion matrix Decision Tree")
+print(confusion_matrix(Y_test, predict_dt))
+
+predict_rf = randomForest_best.predict(X_test_scaled)
+# y_score_rf = randomForest_best.fit(X_test_scaled,Y_test).decision_function(X_test_scaled)
+print("Confusion matrix Random Forest")
+print(confusion_matrix(Y_test, predict_rf))
+
+predict_gb = gradientBoosting_best.predict(X_test_scaled)
+# y_score_gb = gradientBoosting_best.fit(X_test_scaled,Y_test).decision_function(X_test_scaled)
+print("Confusion matrix Gradient Bossting")
+print(confusion_matrix(Y_test, predict_gb))
+
+predict_gnb = gaussianNB_best.predict(X_test_scaled)
+# y_score_gnb = gaussianNB_best.fit(X_test_scaled,Y_test).decision_function(X_test_scaled)
+print("Confusion matrix GaussianNB")
+print(confusion_matrix(Y_test, predict_gnb))
+
+predict_voting = eclf2.predict(X_test_scaled)
+# y_score_voting = eclf2.fit(X_test_scaled,Y_test).decision_function(X_test_scaled)
+print("Confusion matrix VotingClassifier")
+print(confusion_matrix(Y_test, predict_voting))
+
+# ----------------------------------------------------------------------------
+# Roc curve
+def rocvis(true , prob , label ) :
+    from sklearn.metrics import roc_curve
+    if type(true[0]) == str :
+        from sklearn.preprocessing import LabelEncoder
+        le = LabelEncoder()
+        true = le.fit_transform(true)
+    else :
+        pass
+    fpr, tpr, thresholds = roc_curve(true, prob)
+    plt.plot(fpr, tpr, marker='.', label = label  )
+
+fig , ax = plt.subplots(figsize= (10,10))
+plt.plot([0, 1], [0, 1], linestyle='--')
+rocvis(Y_test , y_score_lr , "Logistic Regression")
+# rocvis(Y_test , y_score_knn , "KNN")
+# rocvis(Y_test , y_score_dt , "Decision Tree")
+# rocvis(Y_test , y_score_rf , "Random Forest")
+# ocvis(Y_test , y_score_gb , "Gradient Bossting")
+# rocvis(Y_test , y_score_gnb , "GaussianNB")
+# rocvis(Y_test , y_score_voting , "VotingClassifier")
+plt.legend(fontsize = 18)
+plt.title("Models Roc Curve" , fontsize= 25)
+plt.show()
