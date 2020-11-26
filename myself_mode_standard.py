@@ -24,24 +24,18 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import plot_roc_curve
 
 # Read file, Feature select
-df = pd.read_csv('C:/Users/samsung/Desktop/train_dirty.csv')
+df = pd.read_csv('C:/Users/samsung/Desktop/Telco-Customer-Churn.csv')
 print("*",df.dtypes)
 df['TotalCharges']=df['TotalCharges'].apply(pd.to_numeric, errors='coerce')
 df = df.drop('customerID', axis=1)
 df = df.drop('SeniorCitizen', axis=1)
 df = df.drop('Dependents', axis=1)
-# df = df.drop('TotalCharges', axis=1)
 df = df.drop('gender', axis=1)
-
-
-print(df)
 print(df.isnull().sum()) # check null value
 print("---------------------------------------------------------------")
 
 # dirty data preprocessing
-# dirty data fill mode
-df = df.fillna(method='ffill')
-df = df.fillna(df.mode())
+df = df.dropna()
 print(df)
 print(df.isnull().sum()) # check, fill nan
 print("---------------------------------------------------------------")
@@ -61,7 +55,7 @@ df['StreamingMovies'] = encoder.fit_transform(df['StreamingMovies'])
 df['Contract'] = encoder.fit_transform(df['Contract'])
 df['PaperlessBilling'] = encoder.fit_transform(df['PaperlessBilling'])
 df['PaymentMethod'] = encoder.fit_transform(df['PaymentMethod'])
-df['Churn'] = encoder.fit_transform(df['Churn'])
+# df['Churn'] = encoder.fit_transform(df['Churn'])
 
 # split data(train, test)
 x = df.drop('Churn', axis=1)
